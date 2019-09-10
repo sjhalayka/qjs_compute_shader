@@ -65,8 +65,8 @@ int main(int argc, char **argv)
 		compute(tex_output, tex_input,
 			x_res, y_res,
 			compute_shader_program,
-			input_pixels,
 			output_pixels,
+			input_pixels,
 			max_iterations,
 			threshold,
 			C); 

@@ -31,8 +31,8 @@ public:
 void compute(GLuint& tex_output, GLuint& tex_input, 
 	GLint tex_w, GLint tex_h, 
 	GLuint& compute_shader_program, 
-	const vector<float> &input_pixels, 
-	vector<float> &output_pixels,
+	vector<float> &output_pixels, 
+	const vector<float> &input_pixels,
 	GLuint max_iterations,
 	GLfloat threshold,
 	const quaternion C)
