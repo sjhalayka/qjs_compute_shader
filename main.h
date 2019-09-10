@@ -19,6 +19,48 @@ using namespace std;
 #endif
 
 
+class quaternion
+{
+public:
+	inline quaternion(void) : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /*default constructor*/ }
+	inline quaternion(const float src_x, const float src_y, const float src_z, const float src_w) : x(src_x), y(src_y), z(src_z), w(src_w) { /* custom constructor */ }
+
+	float x, y, z, w;
+};
+ 
+void compute(GLuint& tex_output, GLuint& tex_input, 
+	GLint tex_w, GLint tex_h, 
+	GLuint& compute_shader_program, 
+	const vector<float> &input_pixels, 
+	vector<float> &output_pixels,
+	GLuint max_iterations,
+	GLfloat threshold,
+	const quaternion C)
+{
+	// Copy pixel array to GPU as texture 1
+	glActiveTexture(GL_TEXTURE1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tex_w, tex_h, 0, GL_RGBA, GL_FLOAT, &input_pixels[0]);
+	glBindImageTexture(1, tex_input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+
+	// Pass in the input image as a uniform
+	glUniform1i(glGetUniformLocation(compute_shader_program, "input_image"), 1); // use GL_TEXTURE1
+	glUniform4f(glGetUniformLocation(compute_shader_program, "C"), C.x, C.y, C.z, C.w);
+	glUniform1i(glGetUniformLocation(compute_shader_program, "max_iterations"), max_iterations);
+	glUniform1f(glGetUniformLocation(compute_shader_program, "threshold"), threshold);
+
+	// Run compute shader
+	glDispatchCompute((GLuint)tex_w, (GLuint)tex_h, 1);
+
+	// Wait for compute shader to finish
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	// Copy output pixel array to CPU as texture 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &output_pixels[0]);
+}
+
+
 void init_textures(GLuint &tex_output, GLuint &tex_input, GLuint tex_w, GLuint tex_h)
 {
 	// Generate and allocate output texture
@@ -40,12 +82,7 @@ void init_textures(GLuint &tex_output, GLuint &tex_input, GLuint tex_w, GLuint t
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tex_w, tex_h, 0, GL_RGBA, GL_FLOAT, NULL);
-//	glBindImageTexture(1, tex_input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 }
-
-
-
 
 bool compile_and_link_compute_shader(const char *const file_name, GLuint &program)
 {
@@ -124,8 +161,6 @@ bool compile_and_link_compute_shader(const char *const file_name, GLuint &progra
 	return true;
 }
 
-
-
 bool init_opengl_4_3(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -142,47 +177,68 @@ bool init_opengl_4_3(int argc, char** argv)
 	return true;
 }
 
-
-
-class quaternion
+bool init_all(int argc, char** argv, 
+	GLuint& tex_output, GLuint& tex_input, 
+	GLint tex_w, GLint tex_h, 
+	GLuint& compute_shader_program)
 {
-public:
-	inline quaternion(void) : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /*default constructor*/ }
-	inline quaternion(const float src_x, const float src_y, const float src_z, const float src_w) : x(src_x), y(src_y), z(src_z), w(src_w) { /* custom constructor */ }
-
-	inline float self_dot(void) const
+	// Initialize OpenGL
+	if (false == init_opengl_4_3(argc, argv))
 	{
-		return x * x + y * y + z * z + w * w;
+		cout << "OpenGL 4.3 initialization failure" << endl;
+		return false;
+	}
+	else
+	{
+		cout << "OpenGL 4.3 initialization OK" << endl;
 	}
 
-	inline float magnitude(void) const
+	// Check for non-POT texture support
+	if (!GLEW_ARB_texture_non_power_of_two)
 	{
-		return sqrtf(self_dot());
+		cout << "System does not support non-POT textures" << endl;
+		return false;
+	}
+	else
+	{
+		cout << "System supports non-POT textures" << endl;
 	}
 
-	quaternion operator*(const quaternion& right) const
+	// Initialize the compute shader
+	compute_shader_program = 0;
+
+	if (false == compile_and_link_compute_shader("shader.comp", compute_shader_program))
 	{
-		quaternion ret;
-
-		ret.x = x * right.x - y * right.y - z * right.z - w * right.w;
-		ret.y = x * right.y + y * right.x + z * right.w - w * right.z;
-		ret.z = x * right.z - y * right.w + z * right.x + w * right.y;
-		ret.w = x * right.w + y * right.z - z * right.y + w * right.x;
-
-		return ret;
+		cout << "Failed to initialize compute shader" << endl;
+		return false;
 	}
 
-	quaternion operator+(const quaternion& right) const
+
+	cout << "Texture size: " << tex_w << "x" << tex_h << endl;
+
+	// Check that the global workgrounp count is greater than or equal to the input/output textures
+	GLint global_workgroup_count[2];
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &global_workgroup_count[0]);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &global_workgroup_count[1]);
+
+	cout << "Max global workgroup size: " << global_workgroup_count[0] << "x" << global_workgroup_count[1] << endl;
+
+	if (tex_w > global_workgroup_count[0])
 	{
-		quaternion ret;
-
-		ret.x = x + right.x;
-		ret.y = y + right.y;
-		ret.z = z + right.z;
-		ret.w = w + right.w;
-
-		return ret;
+		cout << "Texture width " << tex_w << " is larger than max " << global_workgroup_count[0] << endl;
+		return false;
 	}
 
-	float x, y, z, w;
-};
+	if (tex_h > global_workgroup_count[1])
+	{
+		cout << "Texture height " << tex_h << " is larger than max " << global_workgroup_count[1] << endl;
+		return false;
+	}
+
+
+	init_textures(tex_output, tex_input, tex_w, tex_h);
+
+
+
+	return true;
+}

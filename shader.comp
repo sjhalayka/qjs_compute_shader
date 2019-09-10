@@ -17,7 +17,7 @@ vec4 qmul(vec4 qa, vec4 qb)
    return qout;
 }
 
-vec4 iterate(vec4 z)
+float iterate(vec4 z)
 {
     float threshold_sq = threshold*threshold;
 
@@ -31,18 +31,18 @@ vec4 iterate(vec4 z)
             break;
     }
 
-    return z;
+    return sqrt(len_sq);
 }
 
 void main()
 {
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
-	//imageStore(output_image, pixel_coords, imageLoad(input_image, pixel_coords));
-	
 	vec4 z = imageLoad(input_image, pixel_coords);
-	z = iterate(z);	
 
-	vec4 output_pixel = z;//vec4(length, length, length, length);
+	float length = iterate(z);	
+
+	vec4 output_pixel = vec4(length, length, length, length);
+
 	imageStore(output_image, pixel_coords, output_pixel);
 }
