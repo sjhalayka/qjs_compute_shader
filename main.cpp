@@ -81,12 +81,17 @@ int main(int argc, char **argv)
 	const quaternion C(0.3f, 0.5f, 0.4f, 0.2f);
 	const int max_iterations = 8;
 	const float threshold = 4.0f;
-	const float z_w = 0;
 
-	quaternion Z(x_grid_min, y_grid_min, z_grid_min, z_w);
+	quaternion Z(x_grid_min, y_grid_min, z_grid_min, 0.0);
 
 	vector<float> input_pixels(x_res * y_res * 4, 0.0f);
 	vector<float> output_pixels(x_res * y_res * 4, 0.0f);
+
+
+
+	// Use the compute shader
+	glUseProgram(compute_shader_program);
+
 
 	// For each z slice...
 	for (size_t z = 0; z < z_res; z++, Z.z += z_step_size)
@@ -121,9 +126,6 @@ int main(int argc, char **argv)
 		glUniform4f(glGetUniformLocation(compute_shader_program, "C"), C.x, C.y, C.z, C.w);
 		glUniform1i(glGetUniformLocation(compute_shader_program, "max_iterations"), max_iterations);
 		glUniform1f(glGetUniformLocation(compute_shader_program, "threshold"), threshold);
-
-		// Use the compute shader
-		glUseProgram(compute_shader_program);
 
 		// Run compute shader
 		glDispatchCompute((GLuint)x_res, (GLuint)y_res, 1);
