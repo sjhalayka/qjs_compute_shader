@@ -56,10 +56,9 @@ void compute(GLuint& tex_output, GLuint& tex_input,
 
 	// Copy output pixel array to CPU as texture 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &output_pixels[0]);
+	glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &output_pixels[0]);
 }
-
 
 void init_textures(GLuint &tex_output, GLuint &tex_input, GLuint tex_w, GLuint tex_h)
 {
@@ -71,8 +70,8 @@ void init_textures(GLuint &tex_output, GLuint &tex_input, GLuint tex_w, GLuint t
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tex_w, tex_h, 0, GL_RGBA, GL_FLOAT, NULL);
-	glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, tex_w, tex_h, 0, GL_RED, GL_FLOAT, NULL);
+	glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
 
 	// Generate input texture
 	glGenTextures(1, &tex_input);
