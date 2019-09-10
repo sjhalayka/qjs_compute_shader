@@ -21,17 +21,17 @@ float iterate(vec4 z)
 {
     float threshold_sq = threshold*threshold;
 
-    float len_sq = dot(z, z);
+    float magnitude_sq = dot(z, z);
 
     for(int i = 0; i < max_iterations; i++)
     {
         z = qmul(z, z) + C;
 
-        if((len_sq = dot(z, z)) >= threshold_sq)
+        if((magnitude_sq = dot(z, z)) >= threshold_sq)
             break;
     }
 
-    return sqrt(len_sq);
+    return sqrt(magnitude_sq);
 }
 
 void main()

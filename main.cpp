@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 			{
 				const size_t index = 4 * (y * x_res + x);
 
-				float magnitude = output_pixels[index + 0];
+				float magnitude = output_pixels[index];
 
 				if (magnitude < threshold)
 					cout << "*";
