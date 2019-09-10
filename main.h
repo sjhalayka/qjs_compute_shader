@@ -40,6 +40,8 @@ void init_textures(GLuint &tex_output, GLuint &tex_input, GLuint tex_w, GLuint t
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tex_w, tex_h, 0, GL_RGBA, GL_FLOAT, NULL);
+//	glBindImageTexture(1, tex_input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 }
 
 
@@ -181,19 +183,6 @@ public:
 
 		return ret;
 	}
-
-	quaternion operator-(const quaternion& right) const
-	{
-		quaternion ret;
-
-		ret.x = x - right.x;
-		ret.y = y - right.y;
-		ret.z = z - right.z;
-		ret.w = w - right.w;
-
-		return ret;
-	}
-
 
 	float x, y, z, w;
 };

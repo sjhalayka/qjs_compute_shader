@@ -80,10 +80,13 @@ int main(int argc, char **argv)
 	// Set up set parameters
 	const quaternion C(0.3f, 0.5f, 0.4f, 0.2f);
 	const int max_iterations = 8;
-	const float threshold = 4.0;
+	const float threshold = 4.0f;
 	const float z_w = 0;
 
 	quaternion Z(x_grid_min, y_grid_min, z_grid_min, z_w);
+
+	vector<float> input_pixels(x_res * y_res * 4, 0.0f);
+	vector<float> output_pixels(x_res * y_res * 4, 0.0f);
 
 	// For each z slice...
 	for (size_t z = 0; z < z_res; z++, Z.z += z_step_size)
@@ -91,8 +94,6 @@ int main(int argc, char **argv)
 		cout << "Z slice " << z + 1 << " of " << z_res << endl;
 
 		Z.x = x_grid_min;
-
-		vector<float> input_pixels(x_res * y_res * 4, 0.0f);
 
 		// Create pixel array
 		for (size_t x = 0; x < x_res; x++, Z.x += x_step_size)
@@ -110,17 +111,13 @@ int main(int argc, char **argv)
 			}
 		}
 
-		
 		// Copy pixel array to GPU as texture 1
 		glActiveTexture(GL_TEXTURE1);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, x_res, y_res, 0, GL_RGBA, GL_FLOAT, &input_pixels[0]);
 		glBindImageTexture(1, tex_input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 
-		glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
 		// Pass in the input image as a uniform
 		glUniform1i(glGetUniformLocation(compute_shader_program, "input_image"), 1); // use GL_TEXTURE1
-		
 		glUniform4f(glGetUniformLocation(compute_shader_program, "C"), C.x, C.y, C.z, C.w);
 		glUniform1i(glGetUniformLocation(compute_shader_program, "max_iterations"), max_iterations);
 		glUniform1f(glGetUniformLocation(compute_shader_program, "threshold"), threshold);
@@ -135,9 +132,10 @@ int main(int argc, char **argv)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		// Copy output pixel array to CPU as texture 0
-		vector<float> output_pixels(x_res * y_res * 4, 0.0f);
+		
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, tex_output);
+		
+		glBindImageTexture(0, tex_output, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); 
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &output_pixels[0]);
 
 		// Print slice
@@ -147,12 +145,18 @@ int main(int argc, char **argv)
 			{
 				size_t index = 4 * (y * x_res + x);
 
-				//cout << "0 " << input_pixels[index + 0] << " " << output_pixels[index + 0] << endl;
-				//cout << "1 " << input_pixels[index + 1] << " " << output_pixels[index + 1] << endl;
-				//cout << "2 " << input_pixels[index + 2] << " " << output_pixels[index + 2] << endl;
-				//cout << "3 " << input_pixels[index + 3] << " " << output_pixels[index + 3] << endl;
+//				cout << "0 " << input_pixels[index + 0] << " " << output_pixels[index + 0] << endl;
+//				cout << "1 " << input_pixels[index + 1] << " " << output_pixels[index + 1] << endl;
+//				cout << "2 " << input_pixels[index + 2] << " " << output_pixels[index + 2] << endl;
+//				cout << "3 " << input_pixels[index + 3] << " " << output_pixels[index + 3] << endl;
 
-				float magnitude = output_pixels[index + 0];
+				quaternion ret;
+				ret.x = output_pixels[index + 0]; 
+				ret.y = output_pixels[index + 1];
+				ret.z = output_pixels[index + 2];
+				ret.w = output_pixels[index + 3];
+
+				float magnitude = ret.magnitude();
 
 				if (magnitude < threshold)
 					cout << "*";

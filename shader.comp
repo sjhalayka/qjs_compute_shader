@@ -8,11 +8,6 @@ uniform vec4 C;
 uniform int max_iterations;
 uniform float threshold;
 
-vec4 qadd(vec4 qa, vec4 qb)
-{
-    return qa + qb;
-}
-
 vec4 qmul(vec4 qa, vec4 qb)
 {
    vec4 qout;
@@ -25,12 +20,12 @@ vec4 qmul(vec4 qa, vec4 qb)
 vec4 iter_func(vec4 z)
 {
 	vec4 z_squared = qmul(z, z);
-	vec4 z_squared_plus_c = qadd(z_squared, C);
+	vec4 z_squared_plus_c = z_squared + C;
 
 	return z_squared_plus_c;
 }
 
-float iterate(vec4 z)
+vec4 iterate(vec4 z)
 {
     float threshold_sq = threshold*threshold;
 
@@ -44,17 +39,18 @@ float iterate(vec4 z)
             break;
     }
 
-    return sqrt(len_sq);
+    return z;
 }
-
 
 void main()
 {
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
+	//imageStore(output_image, pixel_coords, imageLoad(input_image, pixel_coords));
+	
 	vec4 z = imageLoad(input_image, pixel_coords);
-	float length = iterate(z);	
+	z = iterate(z);	
 
-	vec4 output_pixel = vec4(length, length, length, length);
+	vec4 output_pixel = z;//vec4(length, length, length, length);
 	imageStore(output_image, pixel_coords, output_pixel);
 }
