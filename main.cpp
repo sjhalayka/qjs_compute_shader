@@ -71,25 +71,25 @@ int main(int argc, char **argv)
 			threshold,
 			C); 
 
-		//// Print slice
-		//for (size_t x = 0; x < x_res; x++)
-		//{
-		//	for (size_t y = 0; y < y_res; y++)
-		//	{
-		//		const size_t index = 4 * (y * x_res + x);
+		// Print slice
+		for (size_t x = 0; x < x_res; x++)
+		{
+			for (size_t y = 0; y < y_res; y++)
+			{
+				const size_t index = 4 * (y * x_res + x);
 
-		//		float magnitude = output_pixels[index];
+				float magnitude = output_pixels[index];
 
-		//		if (magnitude < threshold)
-		//			cout << "*";
-		//		else
-		//			cout << ".";
-		//	}
+				if (magnitude < threshold)
+					cout << "*";
+				else
+					cout << ".";
+			}
 
-		//	cout << endl;
-		//}
+			cout << endl;
+		}
 
-		//cout << endl << endl;
+		cout << endl << endl;
 	}
 
 	return 0;
