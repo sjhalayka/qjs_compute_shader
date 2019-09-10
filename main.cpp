@@ -155,9 +155,9 @@ int main(int argc, char **argv)
 				float magnitude = output_pixels[index + 0];
 
 				if (magnitude < threshold)
-					cout << "*" << endl;
+					cout << "*";
 				else
-					cout << "." << endl;
+					cout << ".";
 			}
 
 			cout << endl;
