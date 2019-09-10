@@ -38,9 +38,6 @@ int main(int argc, char **argv)
 	vector<float> input_pixels(x_res * y_res * 4, 0.0f);
 	vector<float> output_pixels(x_res * y_res * 4, 0.0f);
 
-	// Use the compute shader
-	glUseProgram(compute_shader_program);
-
 	// For each z slice...
 	for (size_t z = 0; z < z_res; z++, Z.z += z_step_size)
 	{
@@ -55,7 +52,7 @@ int main(int argc, char **argv)
 
 			for (size_t y = 0; y < y_res; y++, Z.y += y_step_size)
 			{
-				size_t index = 4*(y * x_res + x);
+				const size_t index = 4*(y * x_res + x);
 
 				input_pixels[index + 0] = Z.x;
 				input_pixels[index + 1] = Z.y;
@@ -79,7 +76,7 @@ int main(int argc, char **argv)
 		{
 			for (size_t y = 0; y < y_res; y++)
 			{
-				size_t index = 4 * (y * x_res + x);
+				const size_t index = 4 * (y * x_res + x);
 
 				float magnitude = output_pixels[index + 0];
 

@@ -235,10 +235,10 @@ bool init_all(int argc, char** argv,
 		return false;
 	}
 
-
 	init_textures(tex_output, tex_input, tex_w, tex_h);
-
-
+	
+	// Use the compute shader
+	glUseProgram(compute_shader_program);
 
 	return true;
 }
