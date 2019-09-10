@@ -40,9 +40,9 @@ void main()
 
 	vec4 z = imageLoad(input_image, pixel_coords);
 
-	float length = iterate(z);	
+	float magnitude = iterate(z);	
 
-	vec4 output_pixel = vec4(length, length, length, length);
+	vec4 output_pixel = vec4(magnitude, 0, 0, 0);
 
 	imageStore(output_image, pixel_coords, output_pixel);
 }
