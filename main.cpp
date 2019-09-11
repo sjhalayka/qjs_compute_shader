@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 30;
+	const size_t res = 512;
 	const float x_grid_max = 1.5;
 	const float y_grid_max = 1.5;
 	const float z_grid_max = 1.5;
@@ -71,25 +71,15 @@ int main(int argc, char **argv)
 			threshold,
 			C); 
 
-		// Print slice
-		for (size_t x = 0; x < x_res; x++)
+		// Save a sample slice output image to TGA
+		if (z == z_res / 2)
 		{
-			for (size_t y = 0; y < y_res; y++)
-			{
-				const size_t index = y * x_res + x;
-
-				float magnitude = output_pixels[index];
-
-				if (magnitude < threshold)
-					cout << "*";
-				else
-					cout << ".";
-			}
-
-			cout << endl;
+			tga_32bit_image t;
+			t.load_single_channel_float(x_res, y_res, output_pixels);
+			t.save("out.tga");
 		}
 
-		cout << endl << endl;
+		cout << endl;
 	}
 
 	return 0;

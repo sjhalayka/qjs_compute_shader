@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tga_image.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
