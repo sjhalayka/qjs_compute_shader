@@ -55,7 +55,7 @@ void tga_32bit_image::save(const char *const filename)
     fclose(fptr);
 }
 
-void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned short height, const vector<float>& buffer, const float limit)
+void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned short height, const vector<float>& buffer, const float limit, const bool invert)
 {
 	hdr.datatypecode = 2;
 	hdr.x_origin = 0;
@@ -74,6 +74,9 @@ void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned s
 			f = limit;
 
 		unsigned char c = static_cast<unsigned char>(f / limit * 255.0f);
+
+		if (true == invert)
+			c = 255 - c;
 
 		pixels[i].r = c;
 		pixels[i].g = c;

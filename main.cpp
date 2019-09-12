@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		if (z == z_res / 2)
 		{
 			tga_32bit_image t;
-			t.load_single_channel_float(x_res, y_res, output_pixels, threshold);
+			t.load_single_channel_float(x_res, y_res, output_pixels, threshold, true);
 			t.save("out.tga");
 		}
 
