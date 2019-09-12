@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tga_image.h"
+#include "tesselate.h"
 
 #include <iostream>
 #include <vector>
@@ -21,14 +21,7 @@ using namespace std;
 #endif
 
 
-class quaternion
-{
-public:
-	inline quaternion(void) : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /*default constructor*/ }
-	inline quaternion(const float src_x, const float src_y, const float src_z, const float src_w) : x(src_x), y(src_y), z(src_z), w(src_w) { /* custom constructor */ }
 
-	float x, y, z, w;
-};
  
 void compute(GLuint& tex_output, GLuint& tex_input, 
 	GLint tex_w, GLint tex_h, 

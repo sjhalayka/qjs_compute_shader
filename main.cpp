@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 500;
+	const size_t res = 256;
 	const float x_grid_max = 1.5;
 	const float y_grid_max = 1.5;
 	const float z_grid_max = 1.5;
@@ -40,6 +40,8 @@ int main(int argc, char **argv)
 	vector<float> input_pixels(x_res * y_res * num_input_channels, 0.0f);
 	vector<float> output_pixels(x_res * y_res * num_output_channels, 0.0f);
 
+	vector<float> slices;
+
 	// For each z slice...
 	for (size_t z = 0; z < z_res; z++, Z.z += z_step_size)
 	{
@@ -73,16 +75,14 @@ int main(int argc, char **argv)
 			threshold,
 			C); 
 
-		// Save a sample slice output image to TGA
-		if (z == z_res / 2)
-		{
-			tga_32bit_image t;
-			t.load_single_channel_float(x_res, y_res, output_pixels, threshold, true);
-			t.save("out.tga");
-		}
-
-		cout << endl;
+		// Store data for later use
+		for (size_t i = 0; i < output_pixels.size(); i++)
+			slices.push_back(output_pixels[i]);
 	}
 
+	// Convert slices to triangle mesh, save to STL file
+	vector<triangle> triangles; 
+	tesselate_field(slices, triangles, threshold, x_grid_min, x_grid_max, res);
+	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
 	return 0;
 }
