@@ -39,11 +39,9 @@ public:
     void MergeBytes(pixel *pxl, unsigned char *p, int bytes);
     void save(const char *const filename);
     void load(const char *const filename);
-	void load_single_channel_float(unsigned short width, unsigned short height, const vector<float>& buffer);
-    void add_colour_noise(double scale);
+	void load_single_channel_float(unsigned short width, unsigned short height, const vector<float> &buffer);
     
     vector<pixel> pixels;
     header hdr;
     unsigned int width, height;
-    
 };

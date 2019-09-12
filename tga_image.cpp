@@ -22,7 +22,6 @@ void tga_32bit_image::MergeBytes(pixel *pxl, unsigned char *p, int bytes)
     }
 }
 
-
 void tga_32bit_image::save(const char *const filename)
 {
     FILE *fptr;
@@ -61,8 +60,8 @@ void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned s
 	hdr.datatypecode = 2;
 	hdr.x_origin = 0;
 	hdr.y_origin = 0;
-	hdr.width = width;
-	hdr.height = height;
+	this->width = hdr.width = width;
+	this->height = hdr.height = height;
 	hdr.bitsperpixel = 32;
 
 	pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height));
@@ -86,16 +85,12 @@ void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned s
 	}
 }
 
-
 void tga_32bit_image::load(const char *const filename)
 {
     int n=0,i,j;
     int bytes2read,skipover = 0;
     unsigned char p[5];
-    FILE *fptr;
-    
-        
-    
+	FILE* fptr;
     
     /* Open the file */
     if ((fptr = fopen(filename,"rb")) == NULL) {
@@ -117,7 +112,7 @@ void tga_32bit_image::load(const char *const filename)
     hdr.bitsperpixel = fgetc(fptr);
     hdr.imagedescriptor = fgetc(fptr);
     
-    pixels.resize(hdr.width*hdr.height);
+    pixels.resize(static_cast<size_t>(hdr.width)* static_cast<size_t>(hdr.height));
     this->width = hdr.width;
     this->height = hdr.height;
     

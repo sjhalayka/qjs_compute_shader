@@ -35,8 +35,10 @@ int main(int argc, char **argv)
 
 	quaternion Z(x_grid_min, y_grid_min, z_grid_min, 0.0);
 
-	vector<float> input_pixels(x_res * y_res * 4, 0.0f);
-	vector<float> output_pixels(x_res * y_res, 0.0f);
+	const size_t num_input_channels = 4;
+	const size_t num_output_channels = 1;
+	vector<float> input_pixels(x_res * y_res * num_input_channels, 0.0f);
+	vector<float> output_pixels(x_res * y_res * num_output_channels, 0.0f);
 
 	// For each z slice...
 	for (size_t z = 0; z < z_res; z++, Z.z += z_step_size)
@@ -52,7 +54,7 @@ int main(int argc, char **argv)
 
 			for (size_t y = 0; y < y_res; y++, Z.y += y_step_size)
 			{
-				const size_t index = 4*(y * x_res + x);
+				const size_t index = num_input_channels * (y * x_res + x);
 
 				input_pixels[index + 0] = Z.x;
 				input_pixels[index + 1] = Z.y;
