@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 512;
+	const size_t res = 500;
 	const float x_grid_max = 1.5;
 	const float y_grid_max = 1.5;
 	const float z_grid_max = 1.5;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		if (z == z_res / 2)
 		{
 			tga_32bit_image t;
-			t.load_single_channel_float(x_res, y_res, output_pixels);
+			t.load_single_channel_float(x_res, y_res, output_pixels, threshold);
 			t.save("out.tga");
 		}
 

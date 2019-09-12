@@ -45,7 +45,7 @@ void tga_32bit_image::save(const char *const filename)
     putc((hdr.height & 0xFF00) / 256,fptr);
     putc(32,fptr);
     putc(0,fptr);
-    for (size_t i=0;i<hdr.height*hdr.width;i++) {
+    for (size_t i=0;i<static_cast<size_t>(hdr.height)* static_cast<size_t>(hdr.width);i++) {
         putc(pixels[i].b,fptr);
         putc(pixels[i].g,fptr);
         putc(pixels[i].r,fptr);
@@ -55,7 +55,7 @@ void tga_32bit_image::save(const char *const filename)
     fclose(fptr);
 }
 
-void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned short height, const vector<float>& buffer)
+void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned short height, const vector<float>& buffer, const float limit)
 {
 	hdr.datatypecode = 2;
 	hdr.x_origin = 0;
@@ -66,17 +66,14 @@ void tga_32bit_image::load_single_channel_float(unsigned short width, unsigned s
 
 	pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height));
 
-	float largest = 0;
-
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
-		if (buffer[i] > largest)
-			largest = buffer[i];
-	}
+		float f = buffer[i];
 
-	for (size_t i = 0; i < buffer.size(); i++)
-	{
-		unsigned char c = static_cast<unsigned char>(buffer[i] / largest * 255.0f);
+		if (f > limit)
+			f = limit;
+
+		unsigned char c = static_cast<unsigned char>(f / limit * 255.0f);
 
 		pixels[i].r = c;
 		pixels[i].g = c;
@@ -141,7 +138,7 @@ void tga_32bit_image::load(const char *const filename)
             MergeBytes(&(pixels[n]),p,bytes2read);
             n++;
         } else if (hdr.datatypecode == 10) {             /* Compressed */
-            if (fread(p,1,bytes2read+1,fptr) != bytes2read+1) {
+            if (fread(p,1,static_cast<size_t>(bytes2read)+1,fptr) != static_cast<size_t>(bytes2read)+1) {
                 //              fprintf(stderr,"Unexpected end of file at pixel %d\n",i);
                 return;
             }
