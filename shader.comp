@@ -8,11 +8,15 @@ uniform vec4 C;
 uniform int max_iterations;
 uniform float threshold;
 
-vec4 qmul(vec4 qa, vec4 qb)
+// https://www.cs.cmu.edu/~kmcrane/Projects/QuaternionJulia/QJuliaFragment.html
+// http://antongerdelan.net/opengl/compute.html
+
+vec4 qsquare(vec4 q)
 {
    vec4 qout;
-   qout.x = qa.x*qb.x - dot(qa.yzw, qb.yzw);
-   qout.yzw = qa.x*qb.yzw + qb.x*qa.yzw + cross(qa.yzw, qb.yzw);
+
+   qout.x   = q.x*q.x - dot( q.yzw, q.yzw );
+   qout.yzw = 2*q.x*q.yzw;
 
    return qout;
 }
@@ -25,7 +29,7 @@ float iterate(vec4 z)
 
     for(int i = 0; i < max_iterations; i++)
     {
-        z = qmul(z, z) + C;
+        z = qsquare(z) + C;
 
         if((magnitude_sq = dot(z, z)) >= threshold_sq)
             break;
