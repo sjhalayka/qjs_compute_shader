@@ -29,6 +29,8 @@ void tesselate_field(const vector<float> &values, vector<triangle> &triangle_lis
 
 	for(size_t x = 0; x < res - 1; x++)
 	{
+		cout << "Tesselation step " << x + 1 << " of " << res - 1 << endl;
+
 		for(size_t y = 0; y < res - 1; y++)
 		{
 			for(size_t z = 0; z < res - 1; z++)

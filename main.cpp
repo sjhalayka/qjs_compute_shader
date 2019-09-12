@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 256;
+	const size_t res = 500;
 	const float grid_max = 1.5;
 	const float grid_min = -grid_max;
 	const float step_size = (grid_max - grid_min) / (res - 1);
@@ -31,7 +31,8 @@ int main(int argc, char **argv)
 	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 	vector<float> output_pixels(res * res * num_output_channels, 0.0f);
 
-	vector<float> slices;
+	vector<float> slices(output_pixels.size() * res);
+	size_t slices_index = 0;
 
 	// For each z slice...
 	for (size_t z = 0; z < res; z++, Z.z += step_size)
@@ -68,7 +69,10 @@ int main(int argc, char **argv)
 
 		// Store data for later use
 		for (size_t i = 0; i < output_pixels.size(); i++)
-			slices.push_back(output_pixels[i]);
+		{
+			slices[slices_index] = output_pixels[i];
+			slices_index++;
+		}
 	}
 
 	// Convert slices to triangle mesh, save to STL file
