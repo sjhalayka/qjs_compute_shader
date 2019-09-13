@@ -21,7 +21,6 @@ using namespace std;
 
 #endif
 
- 
 void compute(GLuint& tex_output, GLuint& tex_input, 
 	GLint tex_w, GLint tex_h, 
 	GLuint& compute_shader_program, 
@@ -134,7 +133,7 @@ bool compile_and_link_compute_shader(const char *const file_name, GLuint &progra
 	if (GL_FALSE == status)
 	{
 		string status_string = "Program link error.\n";
-		vector<GLchar> buf(4096, '\0');
+		vector<GLchar> buf(4096, '\0'); 
 		glGetShaderInfoLog(program, 4095, 0, &buf[0]);
 
 		for (size_t i = 0; i < buf.size(); i++)
@@ -147,9 +146,15 @@ bool compile_and_link_compute_shader(const char *const file_name, GLuint &progra
 
 		glDetachShader(program, shader);
 		glDeleteShader(shader);
+		glDeleteProgram(program);
 
 		return false;
 	}
+
+	// The shader is no longer needed now that the program
+	// has been linked
+	glDetachShader(program, shader);
+	glDeleteShader(shader);
 
 	return true;
 }
@@ -234,6 +239,13 @@ bool init_all(int argc, char** argv,
 	glUseProgram(compute_shader_program);
 
 	return true;
+}
+
+void delete_all(GLuint& tex_output, GLuint& tex_input, GLuint& compute_shader_program)
+{
+	glDeleteTextures(1, &tex_output);
+	glDeleteTextures(1, &tex_input);
+	glDeleteProgram(compute_shader_program);
 }
 
 bool write_triangles_to_binary_stereo_lithography_file(const vector<triangle>& triangles, const char* const file_name)
