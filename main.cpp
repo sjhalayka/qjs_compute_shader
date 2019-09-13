@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 500;
+	const size_t res = 500; // res must be 2 or greater
 	const float grid_max = 1.5;
 	const float grid_min = -grid_max;
 	const float step_size = (grid_max - grid_min) / (res - 1);
@@ -24,17 +24,20 @@ int main(int argc, char **argv)
 	const int max_iterations = 8;
 	const float threshold = 4.0f;
 
+	// Set up input quaternion
 	quaternion Z(grid_min, grid_min, grid_min, 0.0);
 
+	// Set up input/output data
 	const size_t num_input_channels = 4;
 	const size_t num_output_channels = 1;
 	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 	vector<float> output_pixels(res * res * num_output_channels, 0.0f);
 
-	vector<float> slices(output_pixels.size() * res);
+	// Set up slice data, for use as input into the Marching Cubes algorithm
+	vector<float> slices(output_pixels.size() * res, 0.0f);
 	size_t slices_index = 0;
 
-	// For each z slice...
+	// For each z slice
 	for (size_t z = 0; z < res; z++, Z.z += step_size)
 	{
 		cout << "Z slice " << z + 1 << " of " << res << endl;
@@ -67,7 +70,7 @@ int main(int argc, char **argv)
 			threshold,
 			C); 
 
-		// Store data for later use
+		// Store output data for later use
 		for (size_t i = 0; i < output_pixels.size(); i++)
 		{
 			slices[slices_index] = output_pixels[i];
@@ -75,7 +78,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	// Convert slices to triangle mesh, save to STL file
+	// Convert slice data to triangle mesh, save to STL file
 	vector<triangle> triangles; 
 	tesselate_field(slices, triangles, threshold, grid_min, grid_max, res);
 	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
