@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 		Z.x = grid_min;
 
-		// Create pixel array
+		// Create pixel array to be used as input for the compute shader
 		for (size_t x = 0; x < res; x++, Z.x += step_size)
 		{
 			Z.y = grid_min;
