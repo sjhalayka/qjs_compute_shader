@@ -16,7 +16,10 @@ vec4 qsquare(vec4 q)
 {
    vec4 qout;
 
-   qout.x   = q.x*q.x - dot(q.yzw, q.yzw);
+   qout.x = q.x*q.x - dot(q.yzw, q.yzw);
+
+   // The cross product of a 3D vector and itself is (0, 0, 0), and so
+   // the yzw values are greatly simplified
    qout.yzw = 2*q.x*q.yzw;
 
    return qout;
@@ -25,8 +28,7 @@ vec4 qsquare(vec4 q)
 // Calculate magnitude of quaternion while underdoing iteration
 float iterate(vec4 z)
 {
-    float threshold_sq = threshold*threshold;
-
+    const float threshold_sq = threshold*threshold;
     float magnitude_sq = dot(z, z);
 
     for(int i = 0; i < max_iterations; i++)
@@ -50,11 +52,11 @@ float iterate(vec4 z)
 
 void main()
 {
-	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
+	const ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
 	vec4 z = imageLoad(input_image, pixel_coords);
 
-	float magnitude = iterate(z);	
+	const float magnitude = iterate(z);	
 
 	vec4 output_pixel = vec4(magnitude, 0, 0, 0);
 
