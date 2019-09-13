@@ -27,11 +27,11 @@ int main(int argc, char **argv)
 	// Set up input quaternion
 	quaternion Z(grid_min, grid_min, grid_min, 0.0);
 
-	// Set up input/output data
-	const size_t num_input_channels = 4;
+	// Set up output/input data
 	const size_t num_output_channels = 1;
-	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 	vector<float> output_pixels(res * res * num_output_channels, 0.0f);
+	const size_t num_input_channels = 4;
+	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 
 	// Set up slice data, for use as input into the Marching Cubes algorithm
 	vector<float> slices(output_pixels.size() * res, 0.0f);
@@ -76,11 +76,22 @@ int main(int argc, char **argv)
 			slices[slices_index] = output_pixels[i];
 			slices_index++;
 		}
+
+		// Note: One can also use the marching_cubes::tesselate_adjacent_xy_plane_pair
+		// function here to perform the tesselation of two adjacent vector<float> slices,
+		// rather than storing it all for later use. This way you only need to keep two 
+		// slices in memory, instead of all of the slices. This would make for lots of 
+		// room for triangles in memory. Of course, the syntax would become more complex, 
+		// and harder to follow.
+		//
+		// See https://github.com/sjhalayka/marching_cubes/blob/master/main.cpp for
+		// an example of the use of marching_cubes::tesselate_adjacent_xy_plane_pair
 	}
 
 	// Convert slice data to triangle mesh, save to STL file
 	vector<triangle> triangles; 
 	tesselate_field(slices, triangles, threshold, grid_min, grid_max, res);
 	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
+
 	return 0;
 }
