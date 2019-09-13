@@ -313,7 +313,7 @@ bool write_triangles_to_binary_stereo_lithography_file(const vector<triangle>& t
 		cp += sizeof(short unsigned int);
 	}
 
-	cout << "Writing " << data_size / 1048576 << " MB of data to binary Stereo Lithography file: " << file_name << endl;
+	cout << "Writing " << data_size / 1048576.0f << " MB of data to binary Stereo Lithography file: " << file_name << endl;
 
 	out.write(reinterpret_cast<const char*>(&buffer[0]), data_size);
 	out.close();
