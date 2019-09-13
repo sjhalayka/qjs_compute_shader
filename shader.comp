@@ -54,11 +54,16 @@ void main()
 {
 	const ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
+	// Use input image as input quaternion
 	vec4 z = imageLoad(input_image, pixel_coords);
 
+	// Test to see whether or not the input quaternion is in the Julia set
 	const float magnitude = iterate(z);	
 
-	vec4 output_pixel = vec4(magnitude, 0, 0, 0);
+	// Assign only the first element, since we're writing to a 
+	// single-channel image
+	const vec4 output_pixel = vec4(magnitude, 0, 0, 0);
 
+	// Store result in output image
 	imageStore(output_image, pixel_coords, output_pixel);
 }
