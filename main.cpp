@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 500; // res must be 2 or greater
+	const size_t res = 750; // res must be 2 or greater
 	const float grid_max = 1.5;
 	const float grid_min = -grid_max;
 	const float step_size = (grid_max - grid_min) / (res - 1);
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 	if (false == init_all(argc, argv, tex_output, tex_input, res, res, compute_shader_program))
 	{
 		cout << "Aborting" << endl;
-		return 0;
+		return -1;
 	}
 
 	// Set up quaternion Julia set parameters
