@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 
 	bool first_slice = true;
-	vector<float> last_slice = output_pixels;
+	vector<float> previous_slice = output_pixels;
 
 	vector<triangle> triangles;
 
@@ -82,8 +82,8 @@ int main(int argc, char **argv)
 		{
 			// Now there are two slices, so gather the
 			// triangles for this slice pair
-			tesselate_adjacent_xy_plane_pair(
-				last_slice, output_pixels,
+			tesselate_adjacent_xy_slice_pair(
+				previous_slice, output_pixels,
 				z - 1,
 				triangles,
 				threshold, // Use threshold as isovalue.
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 				grid_min, grid_max, res);
 		}
 
-		last_slice = output_pixels;
+		previous_slice = output_pixels;
 	}
 
 	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
