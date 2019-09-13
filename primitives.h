@@ -12,8 +12,8 @@
 class vertex_3
 {
 public:
-	inline vertex_3(void) : x(0.0f), y(0.0f), z(0.0f), index(0) { /*default constructor*/ }
-	inline vertex_3(const float src_x, const float src_y, const float src_z, const size_t src_index) : x(src_x), y(src_y), z(src_z), index(src_index) { /* custom constructor */ }
+	inline vertex_3(void) : x(0.0f), y(0.0f), z(0.0f) { /*default constructor*/ }
+	inline vertex_3(const float src_x, const float src_y, const float src_z, const size_t src_index) : x(src_x), y(src_y), z(src_z) { /* custom constructor */ }
 
 	inline bool operator==(const vertex_3 &right) const
 	{
@@ -115,31 +115,12 @@ public:
 	}
 
 	float x, y, z;
-	size_t index;
 };
 
 class triangle
 {
 public:
 	vertex_3 vertex[3];
-	vertex_3 normal;
-
-	inline float area(void)
-	{
-		// If degenerate triangles are produced, then the marching cubes epsilon variable may not be small enough in value (see: function marching_cubes.cpp::vertex_interp()).
-		if (vertex[0] == vertex[1] || vertex[0] == vertex[2] || vertex[1] == vertex[2])
-			return 0.0f;
-
-		static vertex_3 a, b, cross;
-
-		// Same vertex winding order (surface normal direction) as OpenGL.
-		a = vertex[0] - vertex[1];
-		b = vertex[0] - vertex[2];
-
-		cross = a.cross(b);
-
-		return 0.5f * cross.length();
-	}
 };
 
 class quaternion
@@ -150,4 +131,5 @@ public:
 
 	float x, y, z, w;
 };
+
 #endif
