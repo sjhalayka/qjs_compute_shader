@@ -40,8 +40,8 @@ float iterate(vec4 z)
 		// compared to the threshold
 		// 
 		// If the magnitude is greater than or equal to the threshold
-		// value, then this part of the set is considered divergent, or
-		// not in the set
+		// value, then this point on the grid is considered divergent, 
+		// or not in the quaternion Julia set
         if((magnitude_sq = dot(z, z)) >= threshold_sq)
             break;
     }
