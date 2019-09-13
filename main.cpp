@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		{
 			// Do nothing... we need 2 slices for the
 			// tesselate_adjacent_xy_plane_pair function,
-			// and by this point we only have 1 slice.
+			// and by this point we only have 1 slice
 			first_slice = false;
 		}
 		else
