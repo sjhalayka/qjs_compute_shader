@@ -1,1 +1,1 @@
-# qjs_compute_shader
+Quaternion Julia set compute shader. Requires OpenGL 4.3.
