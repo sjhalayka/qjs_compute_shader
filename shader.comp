@@ -37,7 +37,7 @@ float iterate(vec4 z)
         z = qsquare(z) + C;
 
 		// Assign value to magnitude_sq, and then check its value
-		// compared to the threshold
+		// compared to threshold_sq
 		// 
 		// If the magnitude is greater than or equal to the threshold
 		// value, then this point on the grid is considered divergent, 
