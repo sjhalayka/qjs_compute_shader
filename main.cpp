@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 512; // res must be 2 or greater
+	const size_t res = 100; // res must be 2 or greater
 	const float grid_max = 1.5;
 	const float grid_min = -grid_max;
 	const float step_size = (grid_max - grid_min) / (res - 1);
@@ -33,9 +33,11 @@ int main(int argc, char **argv)
 	const size_t num_input_channels = 4;
 	vector<float> input_pixels(res * res * num_input_channels, 0.0f);
 
-	bool first_slice = true;
-	vector<float> previous_slice = output_pixels;
+	// We must keep track of both the current and the previous slices, 
+	// so that they can be used as input for the Marching Cubes algorithm
+	vector<float> previous_slice;
 
+	// The result of the Marching Cubes algorithm is triangles
 	vector<triangle> triangles;
 
 	// For each z slice
@@ -71,17 +73,10 @@ int main(int argc, char **argv)
 			threshold,
 			C);
 
-		if (true == first_slice)
+		// Use the Marching Cubes algorithm to convert the output data
+		// into triangles, that is, if this isn't the first loop iteration
+		if(z > 0)
 		{
-			// Do nothing... we need 2 slices for the
-			// tesselate_adjacent_xy_plane_pair function,
-			// and by this point we only have 1 slice
-			first_slice = false;
-		}
-		else
-		{
-			// Now there are two slices, so gather the
-			// triangles for this slice pair
 			tesselate_adjacent_xy_slice_pair(
 				previous_slice, output_pixels,
 				z - 1,
@@ -92,12 +87,10 @@ int main(int argc, char **argv)
 				grid_min, grid_max, res);
 		}
 
-		// One can also use the vector::swap function here
-		// Technically, it would be faster because it's only
-		// a pointer swap instead of an outright copy
 		previous_slice = output_pixels;
 	}
 
+	// Write triangles to file using the common STL format
 	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
 
 	return 0;
