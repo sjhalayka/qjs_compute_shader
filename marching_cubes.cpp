@@ -531,3 +531,108 @@ void marching_cubes::tesselate_adjacent_xy_plane_pair(const vector<float> &xypla
     }
 }
 
+void  marching_cubes::tesselate_field(const vector<float>& values, vector<triangle>& triangle_list, const float& isovalue, const float& grid_min, const float& grid_max, const size_t& res)
+{
+	triangle_list.clear();
+
+	const float step_size = (grid_max - grid_min) / (res - 1);
+
+	for (size_t x = 0; x < res - 1; x++)
+	{
+		cout << "Tesselation step " << x + 1 << " of " << res - 1 << endl;
+
+		for (size_t y = 0; y < res - 1; y++)
+		{
+			for (size_t z = 0; z < res - 1; z++)
+			{
+				grid_cube temp_cube;
+
+				size_t x_offset = 0;
+				size_t y_offset = 0;
+				size_t z_offset = 0;
+
+				// Setup vertex 0
+				x_offset = 0;
+				y_offset = 0;
+				z_offset = 0;
+				temp_cube.vertex[0].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[0].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[0].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[0] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 1
+				x_offset = 1;
+				y_offset = 0;
+				z_offset = 0;
+				temp_cube.vertex[1].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[1].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[1].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[1] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 2
+				x_offset = 1;
+				y_offset = 0;
+				z_offset = 1;
+				temp_cube.vertex[2].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[2].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[2].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[2] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 3
+				x_offset = 0;
+				y_offset = 0;
+				z_offset = 1;
+				temp_cube.vertex[3].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[3].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[3].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[3] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 4
+				x_offset = 0;
+				y_offset = 1;
+				z_offset = 0;
+				temp_cube.vertex[4].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[4].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[4].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[4] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 5
+				x_offset = 1;
+				y_offset = 1;
+				z_offset = 0;
+				temp_cube.vertex[5].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[5].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[5].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[5] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 6
+				x_offset = 1;
+				y_offset = 1;
+				z_offset = 1;
+				temp_cube.vertex[6].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[6].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[6].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[6] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Setup vertex 7
+				x_offset = 0;
+				y_offset = 1;
+				z_offset = 1;
+				temp_cube.vertex[7].x = grid_min + ((x + x_offset) * step_size);
+				temp_cube.vertex[7].y = grid_min + ((y + y_offset) * step_size);
+				temp_cube.vertex[7].z = grid_min + ((z + z_offset) * step_size);
+				temp_cube.value[7] = values[(x + x_offset) * (res) * (res)+(y + y_offset) * (res)+(z + z_offset)];
+
+				// Generate triangles from cube
+				triangle temp_triangle_array[5];
+
+				short unsigned int number_of_triangles_generated = tesselate_grid_cube(isovalue, temp_cube, temp_triangle_array);
+
+				for (short unsigned int i = 0; i < number_of_triangles_generated; i++)
+				{
+					triangle_list.push_back(temp_triangle_array[i]);
+				}
+			}
+		}
+	}
+}
