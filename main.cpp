@@ -87,6 +87,8 @@ int main(int argc, char **argv)
 				grid_min, grid_max, res);
 		}
 
+		// Tehcnically, a swap could be used here, which should be faster
+		// than an assignment
 		previous_slice = output_pixels;
 	}
 
