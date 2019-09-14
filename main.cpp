@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	// Set up grid parameters
-	const size_t res = 100; // res must be 2 or greater
+	const size_t res = 500; // res must be 2 or greater, and not necessarily a power-of-two
 	const float grid_max = 1.5;
 	const float grid_min = -grid_max;
 	const float step_size = (grid_max - grid_min) / (res - 1);
