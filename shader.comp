@@ -1,7 +1,7 @@
 // See:
 // https://www.cs.cmu.edu/~kmcrane/Projects/QuaternionJulia/QJuliaFragment.html
 // http://antongerdelan.net/opengl/compute.html
-// https://github.com/daw42/glslcookbook
+// https://github.com/daw42/glslcookbook/tree/master/chapter10
 
 // OpenGL 4.3 introduces compute shaders
 #version 430 core
