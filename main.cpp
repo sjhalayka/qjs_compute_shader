@@ -7,7 +7,7 @@
 // iterative function at once. This is accomplished by using an OpenGL compute shader. The
 // output of the compute shader is then run through the Marching Cubes algorithm, which 
 // produces a set of triangles that defines the 2D surface of a quaternion Julia set. This 
-// triangle set is saved to STL format, which is widely supported (i.e. by MeshLab).
+// triangle set is saved to STL format, which is widely supported (like, by MeshLab).
 //
 // - Shawn Halayka - 2019 - sjhalayka@gmail.com
 

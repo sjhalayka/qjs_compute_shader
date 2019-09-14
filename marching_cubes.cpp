@@ -1,5 +1,5 @@
 // Modified from Paul Bourke, Polygonising a Scalar Field
-// Source code by Shawn Halayka
+// Additional source code by Shawn Halayka
 // Source code is in the public domain
 
 

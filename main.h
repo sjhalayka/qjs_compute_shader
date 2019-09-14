@@ -1,3 +1,7 @@
+// Source code by Shawn Halayka
+// Source code is in the public domain
+
+
 #ifndef MAIN_H
 #define MAIN_H
 
