@@ -1,3 +1,8 @@
+// See:
+// https://www.cs.cmu.edu/~kmcrane/Projects/QuaternionJulia/QJuliaFragment.html
+// http://antongerdelan.net/opengl/compute.html
+// https://github.com/daw42/glslcookbook
+
 // OpenGL 4.3 introduces compute shaders
 #version 430 core
 
@@ -16,9 +21,6 @@ layout(binding = 1, rgba32f) readonly uniform image2D input_image;
 uniform vec4 C; // Treat quaternions as 4D vectors
 uniform int max_iterations;
 uniform float threshold;
-
-// https://www.cs.cmu.edu/~kmcrane/Projects/QuaternionJulia/QJuliaFragment.html
-// http://antongerdelan.net/opengl/compute.html
 
 // Perform the quaternion square operation
 vec4 qsquare(vec4 q)
@@ -43,7 +45,7 @@ float iterate(vec4 z)
     for(int i = 0; i < max_iterations; i++)
     {
 		// Calculate the traditional quaternion Julia set
-        z = qsquare(z) + C;
+		z = qsquare(z) + C;
 
 		// Assign value to magnitude_sq, and then check its value
 		// compared to threshold_sq
@@ -51,8 +53,8 @@ float iterate(vec4 z)
 		// If the magnitude is greater than or equal to the threshold
 		// value, then this point on the grid is considered divergent, 
 		// or not in the quaternion Julia set
-        if((magnitude_sq = dot(z, z)) >= threshold_sq)
-            break;
+		if((magnitude_sq = dot(z, z)) >= threshold_sq)
+			break;
     }
 
 	// Return magnitude
