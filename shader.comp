@@ -1,7 +1,7 @@
 // OpenGL 4.3 introduces compute shaders
 #version 430 core
 
-// Local workgroup size of 1, which is the default size
+// Use a local workgroup size of 1, which is the default size
 // Altering the local workgroup size requires a reduction in the
 // values passed to glDispatchCompute in main.h
 layout(local_size_x = 1, local_size_y = 1) in;

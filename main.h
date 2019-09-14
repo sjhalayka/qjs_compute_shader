@@ -16,9 +16,8 @@ using namespace std;
 
 // Automatically link in the GLUT and GLEW libraries if compiling on MSVC++
 #ifdef _MSC_VER
-#pragma comment(lib, "glew32")
 #pragma comment(lib, "freeglut")
-
+#pragma comment(lib, "glew32")
 #endif
 
 void compute(GLuint& tex_output, GLuint& tex_input, 
@@ -35,7 +34,7 @@ void compute(GLuint& tex_output, GLuint& tex_input,
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tex_w, tex_h, 0, GL_RGBA, GL_FLOAT, &input_pixels[0]);
 	glBindImageTexture(1, tex_input, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 
-	// Pass in the input image as a uniform
+	// Pass in the input image and quaternion Julia set parameters as uniforms
 	glUniform1i(glGetUniformLocation(compute_shader_program, "input_image"), 1); // use GL_TEXTURE1
 	glUniform4f(glGetUniformLocation(compute_shader_program, "C"), C.x, C.y, C.z, C.w);
 	glUniform1i(glGetUniformLocation(compute_shader_program, "max_iterations"), max_iterations);
