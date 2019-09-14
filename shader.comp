@@ -14,7 +14,7 @@ layout(local_size_x = 1, local_size_y = 1) in;
 // Single-channel output
 layout(binding = 0, r32f) writeonly uniform image2D output_image;
 
-// Four-channel input (because each quaternion has 4 member variables)
+// Four-channel input (because each quaternion has 4 member variables; xyzw)
 layout(binding = 1, rgba32f) readonly uniform image2D input_image;
 
 // Quaternion Julia set constants
