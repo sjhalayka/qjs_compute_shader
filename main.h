@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MAIN_H
+#define MAIN_H
+
 
 #include "marching_cubes.h"
 using namespace marching_cubes;
@@ -319,3 +321,6 @@ bool write_triangles_to_binary_stereo_lithography_file(const vector<triangle>& t
 
 	return true;
 }
+
+
+#endif
