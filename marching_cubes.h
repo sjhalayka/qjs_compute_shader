@@ -8,25 +8,8 @@
 
 
 #include "primitives.h"
-
-
-#include <iostream>
-using std::cout;
-using std::endl;
-
-#include <fstream>
-using std::ofstream;
-
-#include <iomanip>
-using std::ios_base;
-
 #include <vector>
-using std::vector;
-
-#include <set>
-using std::set;
-
-
+using namespace std;
 
 
 namespace marching_cubes

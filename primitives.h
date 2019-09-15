@@ -1,12 +1,12 @@
 // Source code by Shawn Halayka
 // Source code is in the public domain
 
+
 #ifndef PRIMITIVES_H
 #define PRIMITIVES_H
 
 
 #include <cmath>
-#include <cstddef> // g++ chokes on size_t without this
 
 
 class vertex_3
