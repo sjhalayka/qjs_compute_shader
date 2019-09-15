@@ -106,6 +106,7 @@ int main(int argc, char **argv)
 	// Write triangles to file using the common STL format
 	write_triangles_to_binary_stereo_lithography_file(triangles, "out.stl");
 
+	// Clean up all memory
 	delete_all(tex_output, tex_input, compute_shader_program);
 
 	return 0;
