@@ -1,4 +1,4 @@
-// Source code by Shawn Halayka
+=// Source code by Shawn Halayka
 // Source code is in the public domain
 //
 // See:
@@ -29,25 +29,25 @@ uniform float threshold;
 // Perform the quaternion square operation
 vec4 qsquare(vec4 q)
 {
-   vec4 qout;
+	vec4 qout;
 
-   qout.x = q.x*q.x - dot(q.yzw, q.yzw);
+	qout.x = q.x * q.x - dot(q.yzw, q.yzw);
 
-   // The cross product of a 3D vector and itself is (0, 0, 0), and so
-   // the yzw values are greatly simplified
-   qout.yzw = 2*q.x*q.yzw;
+	// The cross product of a 3D vector and itself is (0, 0, 0), and so
+	// the yzw values are greatly simplified
+	qout.yzw = 2 * q.x * q.yzw;
 
-   return qout;
+	return qout;
 }
 
 // Calculate magnitude of quaternion while underdoing iteration
 float iterate(vec4 z)
 {
-    const float threshold_sq = threshold*threshold;
-    float magnitude_sq = dot(z, z);
+	const float threshold_sq = threshold * threshold;
+	float magnitude_sq = dot(z, z);
 
-    for(int i = 0; i < max_iterations; i++)
-    {
+	for (int i = 0; i < max_iterations; i++)
+	{
 		// Calculate the traditional quaternion Julia set
 		z = qsquare(z) + C;
 
@@ -57,12 +57,12 @@ float iterate(vec4 z)
 		// If the magnitude is greater than or equal to the threshold
 		// value, then this point on the grid is considered divergent, 
 		// or not in the quaternion Julia set
-		if((magnitude_sq = dot(z, z)) >= threshold_sq)
+		if ((magnitude_sq = dot(z, z)) >= threshold_sq)
 			break;
-    }
+	}
 
 	// Return magnitude
-    return sqrt(magnitude_sq);
+	return sqrt(magnitude_sq);
 }
 
 void main()
@@ -74,7 +74,7 @@ void main()
 	vec4 z = imageLoad(input_image, pixel_coords);
 
 	// Test to see whether or not the input quaternion is in the Julia set
-	const float magnitude = iterate(z);	
+	const float magnitude = iterate(z);
 
 	// Assign only the first element, since we're writing to a 
 	// single-channel image
