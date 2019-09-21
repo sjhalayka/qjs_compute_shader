@@ -67,13 +67,24 @@ int main(int argc, char **argv)
 			{
 				const size_t index = num_input_channels * (y * res + x);
 
-				input_pixels[index + 0] = Z.x;
-				input_pixels[index + 1] = Z.y;
-				input_pixels[index + 2] = Z.z; 
-				input_pixels[index + 3] = Z.w;
+				// Make a border
+				if (z == 0 || z == res - 1 || x == 0 || x == res - 1 || y == 0 || y == res - 1)
+				{
+					input_pixels[index + 0] = threshold;
+					input_pixels[index + 1] = threshold;
+					input_pixels[index + 2] = threshold;
+					input_pixels[index + 3] = threshold;
+				}
+				else
+				{
+					input_pixels[index + 0] = Z.x;
+					input_pixels[index + 1] = Z.y;
+					input_pixels[index + 2] = Z.z;
+					input_pixels[index + 3] = Z.w;
+				}
 			}
 		}
-
+			 
 		// Run the compute shader
 		compute(tex_output, tex_input,
 			res, res,
