@@ -67,21 +67,10 @@ int main(int argc, char **argv)
 			{
 				const size_t index = num_input_channels * (y * res + x);
 
-				// Make a border
-				if (z == 0 || z == res - 1 || x == 0 || x == res - 1 || y == 0 || y == res - 1)
-				{
-					input_pixels[index + 0] = threshold;
-					input_pixels[index + 1] = threshold;
-					input_pixels[index + 2] = threshold;
-					input_pixels[index + 3] = threshold;
-				}
-				else
-				{
-					input_pixels[index + 0] = Z.x;
-					input_pixels[index + 1] = Z.y;
-					input_pixels[index + 2] = Z.z;
-					input_pixels[index + 3] = Z.w;
-				}
+				input_pixels[index + 0] = Z.x;
+				input_pixels[index + 1] = Z.y;
+				input_pixels[index + 2] = Z.z;
+				input_pixels[index + 3] = Z.w;
 			}
 		}
 			 
@@ -94,6 +83,19 @@ int main(int argc, char **argv)
 			max_iterations,
 			threshold,
 			C);
+
+		// Make a border
+		for (size_t x = 0; x < res; x++)
+		{
+			for (size_t y = 0; y < res; y++)
+			{
+				if (z == 0 || z == res - 1 || x == 0 || x == res - 1 || y == 0 || y == res - 1)
+				{
+					const size_t index = num_output_channels * (y * res + x);
+					output_pixels[index] = threshold + 1.0f;
+				}
+			}
+		}
 
 		// Use the Marching Cubes algorithm to convert the output data
 		// into triangles, that is, if this isn't the first loop iteration
