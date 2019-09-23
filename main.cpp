@@ -84,12 +84,14 @@ int main(int argc, char **argv)
 			threshold,
 			C);
 
-		// Make a border, so that the triangulation is closed
+		// Make a border, so that the mesh is closed around the edges
 		for (size_t x = 0; x < res; x++)
 		{
 			for (size_t y = 0; y < res; y++)
 			{
-				if (z == 0 || z == res - 1 || x == 0 || x == res - 1 || y == 0 || y == res - 1)
+				if (z == 0 || z == res - 1 || 
+					x == 0 || x == res - 1 || 
+					y == 0 || y == res - 1)
 				{
 					const size_t index = num_output_channels * (y * res + x);
 					output_pixels[index] = threshold + 1.0f;
