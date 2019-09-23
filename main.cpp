@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 			threshold,
 			C);
 
-		// Make a border
+		// Make a border, so that the triangulation is closed
 		for (size_t x = 0; x < res; x++)
 		{
 			for (size_t y = 0; y < res; y++)
