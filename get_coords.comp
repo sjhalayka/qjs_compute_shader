@@ -6,5 +6,5 @@ layout(binding = 0, rgba32f) writeonly uniform image2D output_image;
 
 void main()
 {
-	imageStore(output_image, per_compute_pixel_coords, vec4(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, 1, 1));
+	imageStore(output_image, ivec2(gl_GlobalInvocationID.xy), vec4(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, 1, 1));
 }
