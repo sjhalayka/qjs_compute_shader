@@ -1,116 +1,85 @@
-#version 430
-
-layout(local_size_x = 16, local_size_y = 16) in;
-
-layout(binding = 0, rgba32f) writeonly uniform image2D output_image; // small tex
-layout(binding = 1, rgba32f) readonly uniform image2D input_image; // small tex
-layout(binding = 2, rgba32f) readonly uniform image2D input_light_image; // large tex
-layout(binding = 3, rgba32f) readonly uniform image2D input_light_blocking_image; // large tex
-layout(binding = 4, rgba32f) readonly uniform image2D input_coordinates_image; // small tex
+// Source code by Shawn Halayka
+// Source code is in the public domain
+//
+// See:
+// https://www.cs.cmu.edu/~kmcrane/Projects/QuaternionJulia/QJuliaFragment.html
+// http://antongerdelan.net/opengl/compute.html
+// https://github.com/daw42/glslcookbook/tree/master/chapter10
 
 
-uniform ivec2 u_size;
-uniform ivec2 u_size_small;
-uniform ivec2 u_chunk_index;
+// OpenGL 4.3 introduces compute shaders
+#version 430 core
 
+// Use a local workgroup size of 1, which is the default size
+// Altering the local workgroup size requires a proportional
+// reduction in the values passed to glDispatchCompute in main.h
+layout(local_size_x = 1, local_size_y = 1) in;
 
+// Single-channel output
+layout(binding = 0, r32f) writeonly uniform image2D output_image;
 
+// Four-channel input (because each quaternion has 4 member variables; xyzw)
+layout(binding = 1, rgba32f) readonly uniform image2D input_image;
+
+// Quaternion Julia set constants
+uniform vec4 C; // Treat quaternions as 4D vectors
+uniform int max_iterations;
+uniform float threshold;
+
+// Perform the quaternion square operation
+vec4 qsquare(vec4 q)
+{
+	vec4 qout;
+
+	qout.x = q.x * q.x - dot(q.yzw, q.yzw);
+
+	// The cross product of a 3D vector and itself is (0, 0, 0), and so
+	// the yzw values are greatly simplified
+	qout.yzw = 2 * q.x * q.yzw;
+
+	return qout;
+}
+
+// Calculate magnitude of quaternion while underdoing iteration
+float iterate(vec4 z)
+{
+	const float threshold_sq = threshold * threshold;
+	float magnitude_sq = dot(z, z);
+
+	for (int i = 0; i < max_iterations; i++)
+	{
+		// Calculate the traditional quaternion Julia set
+		z = qsquare(z) + C;
+
+		// Assign value to magnitude_sq, and then check its value
+		// compared to threshold_sq
+		// 
+		// If the magnitude is greater than or equal to the threshold
+		// value, then this point on the grid is considered divergent, 
+		// or not in the quaternion Julia set
+		if ((magnitude_sq = dot(z, z)) >= threshold_sq)
+			break;
+	}
+
+	// Return magnitude
+	return sqrt(magnitude_sq);
+}
 
 void main()
 {
-	ivec2 per_compute_pixel_coords = ivec2(gl_GlobalInvocationID.xy);
-	//per_compute_pixel_coords -= u_size_small * u_chunk_index;
+	// Get global coordinates
+	const ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
-	vec4 image_sample = imageLoad(input_image, per_compute_pixel_coords);
+	// Use input image as input quaternion
+	vec4 z = imageLoad(input_image, pixel_coords);
 
-	// Black pixels are still black when lit, so skip lighting altogether
-	if(image_sample.x == 0 && image_sample.y == 0 && image_sample.z == 0)
-	{
-		imageStore(output_image, per_compute_pixel_coords, vec4(0, 0, 0, 1));
-		return;
-	}
-	
-	//per_compute_pixel_coords += u_size_small * u_chunk_index; 
+	// Test to see whether or not the input quaternion is in the Julia set
+	const float magnitude = iterate(z);
 
-	vec3 lighting = vec3(0, 0, 0);
+	// Assign only the first element, since we're writing to a 
+	// single-channel image
+	const vec4 output_pixel = vec4(magnitude, 0, 0, 0);
 
-	for(int i = 0; i < u_size.x; i++) 
-	{
-		for(int j = 0; j < u_size.y; j++)
-		{
-			ivec2 per_image_pixel_coords = ivec2(i, j);
-
-			vec4 light_image_sample = imageLoad(input_light_image, per_image_pixel_coords);
-
-			// Not a light
-			if(light_image_sample.x == 0 && light_image_sample.y == 0 && light_image_sample.z == 0) 
-				continue;
-
-			vec4 light_blocking_image_sample = imageLoad(input_light_blocking_image, per_image_pixel_coords);
-
-			// A light blocker doesn't receive light
-			if(light_blocking_image_sample.x == 1 && light_blocking_image_sample.y == 1 && light_blocking_image_sample.z == 1)
-				continue;
-
-			int num_steps = 0;
-
-			vec2 pixel_diff;
-			pixel_diff.x = distance(per_compute_pixel_coords.x, per_image_pixel_coords.x);
-			pixel_diff.y = distance(per_compute_pixel_coords.y, per_image_pixel_coords.y);
-
-			if(pixel_diff.x > pixel_diff.y)
-				num_steps = int(pixel_diff.x);
-			else
-				num_steps = int(pixel_diff.y);
-
-			// Please forgive my use of a magic number
-			if(num_steps < 10)
-				num_steps = 10;
-
-			vec2 light_pos = per_image_pixel_coords;		
-
-			ivec2 start = per_image_pixel_coords;
-			ivec2 end = per_compute_pixel_coords;
-
-			bool found_light_blocker = false;
-			vec2 curr_uv;
-			ivec2 curr_uv_i;
-
-			for(int s = 0; s < num_steps; s++)
-			{
-				curr_uv = mix(start, end, float(s)/float(num_steps - 1));
-
-				curr_uv_i.x = int(curr_uv.x);
-				curr_uv_i.y = int(curr_uv.y);
-
-				light_blocking_image_sample = imageLoad(input_light_blocking_image, curr_uv_i);
-
-				if(light_blocking_image_sample.x == 1 && light_blocking_image_sample.y == 1 && light_blocking_image_sample.z == 1)
-				{
-					found_light_blocker = true;
-					break;
-				}
-			}
-
-			if(found_light_blocker == false)
-			{
-				// Convert from screen space to some other coordinate system,
-				// so that attenuation works much better
-				const float coordinate_change = 1.0 / 5.0;
-				
-				const float dist = distance(light_pos, curr_uv) * coordinate_change; 
-				const float dist_coefficient = 1;
-				const float dist_squared_coefficient = 1;
-
-				const float attenuation = 1.0 / (1.0f + dist_coefficient * dist + dist_squared_coefficient * dist*dist);
-				lighting += light_image_sample.xyz * attenuation;
-			}
-		}
-	}
-
-	lighting = clamp(lighting, 0, 1);
-	lighting = max(lighting, 0.001); // Throw in some ambient lighting
-	
-
-	imageStore(output_image, per_compute_pixel_coords, vec4(lighting, 1.0));
+	// Store result in output image
+	imageStore(output_image, pixel_coords, output_pixel);
 }
